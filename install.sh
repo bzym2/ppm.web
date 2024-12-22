@@ -29,10 +29,10 @@ prompt_github_mirror() {
     log_warning "是否使用 GitHub 镜像（默认为不使用）？(y/n)"
     read -r USE_GITHUB_MIRROR
     if [[ "$USE_GITHUB_MIRROR" == "y" || "$USE_GITHUB_MIRROR" == "Y" ]]; then
-        GITHUB_URL="https://proxy.bzym.fun/https://github.com/Stevesuk0/ppm/archive/refs/heads/main.zip"
+        GITHUB_URL="https://proxy.bzym.fun/https://github.com/Stevesuk0/ppm/archive/refs/heads/master.zip"
         log_success "启用 GitHub 镜像..."
     else
-        GITHUB_URL="https://github.com/Stevesuk0/ppm/archive/refs/heads/main.zip"
+        GITHUB_URL="https://github.com/Stevesuk0/ppm/archive/refs/heads/master.zip"
     fi
 }
 
@@ -88,12 +88,12 @@ setup_ppm() {
     log_info "从 $GITHUB_URL 下载 PPM 仓库..."
 
     # 下载并解压 PPM 仓库
-    curl -L "$GITHUB_URL" -o ppm-main.zip
-    unzip ppm-main.zip -d "$INSTALL_PATH"
-    rm ppm-main.zip  # 删除压缩包
+    wget -L "$GITHUB_URL"
+    unzip master.zip -d "$INSTALL_PATH/ppm"
+    rm master.zip  # 删除压缩包
 
     # 设置符号链接
-    sudo ln -sf "$INSTALL_PATH/ppm-main/launcher.py" /usr/bin/ppm
+    sudo ln -sf "$INSTALL_PATH/ppm/master/launcher.py" /usr/bin/ppm
 }
 
 # 初始化 PPM
