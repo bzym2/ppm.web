@@ -89,11 +89,11 @@ setup_ppm() {
 
     # 下载并解压 PPM 仓库
     wget -L "$GITHUB_URL"
-    unzip master.zip -d "$INSTALL_PATH/ppm"
+    unzip master.zip -d "$INSTALL_PATH"
     rm master.zip  # 删除压缩包
 
     # 设置符号链接
-    sudo ln -sf "$INSTALL_PATH/ppm/master/launcher.py" /usr/bin/ppm
+    sudo ln -sf "$INSTALL_PATH/master/launcher.py" /usr/bin/ppm
 }
 
 # 初始化 PPM
