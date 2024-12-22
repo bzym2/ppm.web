@@ -29,7 +29,7 @@ prompt_github_mirror() {
     log_warning "是否使用 GitHub 镜像（默认为不使用）？(y/n)"
     read -r USE_GITHUB_MIRROR
     if [[ "$USE_GITHUB_MIRROR" == "y" || "$USE_GITHUB_MIRROR" == "Y" ]]; then
-        GITHUB_URL="https://ghproxy.com/https://github.com/Stevesuk0/ppm.git"
+        GITHUB_URL="https://proxy.bzym.fun/https://github.com/Stevesuk0/ppm.git"
         log_success "启用 GitHub 镜像..."
     else
         GITHUB_URL="https://github.com/Stevesuk0/ppm.git"
