@@ -29,10 +29,10 @@ prompt_github_mirror() {
     log_warning "是否使用 GitHub 镜像（默认为不使用）？(y/n)"
     read -r USE_GITHUB_MIRROR
     if [[ "$USE_GITHUB_MIRROR" == "y" || "$USE_GITHUB_MIRROR" == "Y" ]]; then
-        GITHUB_URL="https://proxy.bzym.fun/https://github.com/Stevesuk0/ppm.git"
+        GITHUB_URL="https://proxy.bzym.fun/https://github.com/Stevesuk0/ppm/archive/refs/heads/main.zip"
         log_success "启用 GitHub 镜像..."
     else
-        GITHUB_URL="https://github.com/Stevesuk0/ppm.git"
+        GITHUB_URL="https://github.com/Stevesuk0/ppm/archive/refs/heads/main.zip"
     fi
 }
 
@@ -55,11 +55,15 @@ install_dependencies() {
 
     if [[ "$DISTRO" == "ubuntu" || "$DISTRO" == "debian" ]]; then
         sudo apt update
-        sudo apt install -y python3-dbus python3-colorama python3-requests
-    elif [[ "$DISTRO" == "centos" || "$DISTRO" == "fedora" ]]; then
-        sudo dnf install -y python3-dbus python3-colorama python3-requests
+        sudo apt install -y python3-dbus python3-colorama python3-requests unzip curl
+    elif [[ "$DISTRO" == "centos" && $(rpm -E %{rhel}) -le 7 ]]; then
+        log_info "CentOS 7 检测到，使用 yum 安装依赖..."
+        sudo yum install -y python3-dbus python3-colorama python3-requests unzip curl
+    elif [[ "$DISTRO" == "fedora" || "$DISTRO" == "rhel" ]]; then
+        log_info "RHEL 系统检测到，使用 yum 安装依赖..."
+        sudo yum install -y python3-dbus python3-colorama python3-requests unzip curl
     elif [[ "$DISTRO" == "arch" ]]; then
-        sudo pacman -S --noconfirm python-dbus python-colorama python-requests
+        sudo pacman -S --noconfirm python-dbus python-colorama python-requests unzip curl
     else
         log_error "不支持的发行版: $DISTRO"
         exit 1
@@ -79,11 +83,17 @@ detect_distro() {
     install_dependencies $DISTRO
 }
 
-# 克隆仓库并设置软连接
+# 使用 curl 下载并解压 PPM 仓库
 setup_ppm() {
-    log_info "克隆 PPM 仓库到 $INSTALL_PATH..."
-    sudo git clone "$GITHUB_URL" "$INSTALL_PATH"
-    sudo ln -sf "$INSTALL_PATH/launcher.py" /usr/bin/ppm
+    log_info "从 $GITHUB_URL 下载 PPM 仓库..."
+
+    # 下载并解压 PPM 仓库
+    curl -L "$GITHUB_URL" -o ppm-main.zip
+    unzip ppm-main.zip -d "$INSTALL_PATH"
+    rm ppm-main.zip  # 删除压缩包
+
+    # 设置符号链接
+    sudo ln -sf "$INSTALL_PATH/ppm-main/launcher.py" /usr/bin/ppm
 }
 
 # 初始化 PPM
@@ -103,7 +113,7 @@ main() {
     # 检测并安装依赖
     detect_distro
 
-    # 克隆仓库并设置软连接
+    # 下载并解压 PPM
     setup_ppm
 
     # 初始化 PPM
